@@ -1,0 +1,153 @@
+---
+- hosts: bitrix
+  vars:
+    repos:
+      epel:
+        name: 'epel-release'
+        baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/$basearch/'
+        description: 'epel release'
+      nginx:
+        name: 'nginx-official'
+        baseurl: 'http://nginx.org/packages/centos/$releasever/$basearch/'
+        description: 'nginx official repo'
+    packages:
+      - nginx
+      - php-fpm
+      - php-mysql
+      - php-mbstring
+      - php-gd
+      - php-xcache
+      - php-mcrypt
+      - freetype
+      - memcached
+      - mariadb-server
+    services:
+      - nginx
+      - php-fpm
+      - mariadb
+      - memcached
+    nginx:
+       user: 'bitrix'
+       user_shell: /bin/bash
+       workers: '1'
+       worker_connections: '1024'
+    php:
+      fpm_socket: '/var/run/php-fpm.sock'
+      slowlog: '/var/log/php_slow.log'
+      errorlog: '/var/log/php_error.log'
+      session: '/var/run/php/'
+    bitrix:
+       site_dir: '/home/bitrix/www/'
+       url: 'https://www.1c-bitrix.ru/download/start_encode_php5.tar.gz'
+
+  remote_user: root
+
+  tasks:
+  - name: ensure selinux is off
+    lineinfile:
+      path: /etc/selinux/config
+      regexp: '^SELINUX='
+      line: 'SELINUX=disabled'
+
+  - name: add repositories
+    yum_repository:
+      name: "{{ item.value.name }}"
+      baseurl: "{{ item.value.baseurl }}"
+      description: Repo managed by ansible
+      gpgcheck: no
+    with_dict: "{{ repos }}"
+
+  - name: install required packages
+    yum:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - "{{ packages }}"
+
+  - name: manage nginx user
+    user:
+      name: "{{ nginx.user }}"
+      shell: "{{ nginx.user_shell }}"
+      state: present
+
+  - name: remove default nginx config
+    file:
+      path: /etc/nginx/conf.d/default.conf
+      state: absent
+
+  - name: copy nginx conf
+    template:
+      src: templates/nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: "{{ nginx.user }}"
+      group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: copy nginx bitrix conf
+    template:
+      src: templates/bitrix.conf
+      dest: /etc/nginx/conf.d/bitrix.conf
+      owner: "{{ nginx.user }}"
+      group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: copy php-fpm conf
+    template:
+      src: templates/php-fpm.conf
+      dest: /etc/php-fpm.d/www.conf
+      owner: "{{ nginx.user }}"
+      group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: copy php.ini
+    template:
+      src: templates/php.ini
+      dest: /etc/php.ini
+      owner: "{{ nginx.user }}"
+      group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: copy xcache.ini
+    template:
+      src: templates/xcache.ini
+      dest: /etc/php.d/xcache.ini
+      owner: "{{ nginx.user }}"
+      group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: create bitrix directory
+    file:
+      path: "{{ bitrix.site_dir }}"
+      state: directory
+      owner: "{{ nginx.user }}"
+
+  - name: create php session directory
+    file:
+      path: "{{ php.session }}"
+      state: directory
+      owner: "{{ nginx.user }}"
+
+  - name: download bitrix archive
+    unarchive:
+      src: "{{ bitrix.url }}"
+      dest: "{{ bitrix.site_dir }}"
+      owner: "{{ nginx.user }}"
+      remote_src: yes
+      creates: "{{ bitrix.site_dir}}/index.php"
+
+  - name: ensure services running
+    service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: yes
+    with_items:
+    - "{{ services }}"
+
+  - name: manage firewall
+    firewalld:
+      service: "{{ item }}"
+      permanent: true
+      state: enabled
+    with_items:
+      - http
+      - https
