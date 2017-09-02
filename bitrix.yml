@@ -10,14 +10,18 @@
         name: 'nginx-official'
         baseurl: 'http://nginx.org/packages/centos/$releasever/$basearch/'
         description: 'nginx official repo'
+      webtatic:
+        name: 'webtatic'
+        baseurl: 'https://repo.webtatic.com/yum/el7/$basearch/'
+        description: 'webtatic repo'
     packages:
       - nginx
-      - php-fpm
-      - php-mysql
-      - php-mbstring
-      - php-gd
-      - php-xcache
-      - php-mcrypt
+      - php71w-fpm
+      - php71w-mysql
+      - php71w-mbstring
+      - php71w-gd
+      - php71w-opcache
+      - php71w-mcrypt
       - freetype
       - memcached
       - mariadb-server
@@ -38,7 +42,7 @@
       session: '/var/run/php/'
     bitrix:
        site_dir: '/home/bitrix/www/'
-       url: 'https://www.1c-bitrix.ru/download/start_encode_php5.tar.gz'
+       url: 'http://www.1c-bitrix.ru/download/small_business_encode_php5.tar.gz'
 
   remote_user: root
 
@@ -103,14 +107,6 @@
     template:
       src: templates/php.ini
       dest: /etc/php.ini
-      owner: "{{ nginx.user }}"
-      group: "{{ nginx.user }}"
-      mode: 0644
-
-  - name: copy xcache.ini
-    template:
-      src: templates/xcache.ini
-      dest: /etc/php.d/xcache.ini
       owner: "{{ nginx.user }}"
       group: "{{ nginx.user }}"
       mode: 0644
