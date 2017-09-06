@@ -1,0 +1,27 @@
+---
+nginx:
+   user: 'bitrix'
+   user_shell: /bin/bash
+   workers: '1'
+   worker_connections: '1024'
+php:
+  timezone: 'Europe/Moscow'
+  fpm_socket: '/var/run/php-fpm.sock'
+  slowlog: '/var/log/php_slow.log'
+  errorlog: '/var/log/php_error.log'
+  session: '/var/run/php/'
+  max_children: '50'
+  start_servers: '10'
+  min_spare_servers: '5'
+  max_spare_servers: '35'
+sites:
+  bitrix:
+    name: 'bitrix'
+    site_dir: '/home/bitrix/www'
+    url: 'http://www.1c-bitrix.ru/download/small_business_encode_php5.tar.gz'
+  phpmyadmin:
+    name: 'phpmyadmin'
+    site_dir: '/home/bitrix/phpmyadmin'
+    url: 'https://files.phpmyadmin.net/phpMyAdmin/4.7.4/phpMyAdmin-4.7.4-all-languages.tar.gz'
+mysql:
+  root_password: 'secret'

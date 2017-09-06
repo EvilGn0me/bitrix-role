@@ -1,0 +1,32 @@
+---
+repos:
+  epel:
+    name: 'epel-release'
+    baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/$basearch/'
+    description: 'epel release'
+  nginx:
+    name: 'nginx-official'
+    baseurl: 'http://nginx.org/packages/centos/$releasever/$basearch/'
+    description: 'nginx official repo'
+  webtatic:
+    name: 'webtatic'
+    baseurl: 'https://repo.webtatic.com/yum/el7/$basearch/'
+    description: 'webtatic repo'
+packages:
+  - nginx
+  - php71w-fpm
+  - php71w-mysql
+  - php71w-mbstring
+  - php71w-gd
+  - php71w-opcache
+  - php71w-mcrypt
+  - freetype
+  - memcached
+  - mariadb-server
+  - unzip
+  - MySQL-python
+services:
+  - nginx
+  - php-fpm
+  - mariadb
+  - memcached

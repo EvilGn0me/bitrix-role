@@ -1,50 +1,9 @@
 ---
 - hosts: bitrix
-  vars:
-    repos:
-      epel:
-        name: 'epel-release'
-        baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/$basearch/'
-        description: 'epel release'
-      nginx:
-        name: 'nginx-official'
-        baseurl: 'http://nginx.org/packages/centos/$releasever/$basearch/'
-        description: 'nginx official repo'
-      webtatic:
-        name: 'webtatic'
-        baseurl: 'https://repo.webtatic.com/yum/el7/$basearch/'
-        description: 'webtatic repo'
-    packages:
-      - nginx
-      - php71w-fpm
-      - php71w-mysql
-      - php71w-mbstring
-      - php71w-gd
-      - php71w-opcache
-      - php71w-mcrypt
-      - freetype
-      - memcached
-      - mariadb-server
-    services:
-      - nginx
-      - php-fpm
-      - mariadb
-      - memcached
-    nginx:
-       user: 'bitrix'
-       user_shell: /bin/bash
-       workers: '1'
-       worker_connections: '1024'
-    php:
-      fpm_socket: '/var/run/php-fpm.sock'
-      slowlog: '/var/log/php_slow.log'
-      errorlog: '/var/log/php_error.log'
-      session: '/var/run/php/'
-    bitrix:
-       site_dir: '/home/bitrix/www/'
-       url: 'http://www.1c-bitrix.ru/download/small_business_encode_php5.tar.gz'
-
   remote_user: root
+  vars_files:
+    - settings/{{ ansible_os_family|lower }}.yml
+    - settings/common.yml
 
   tasks:
   - name: ensure selinux is off
@@ -89,11 +48,12 @@
 
   - name: copy nginx bitrix conf
     template:
-      src: templates/bitrix.conf
-      dest: /etc/nginx/conf.d/bitrix.conf
+      src: "templates/{{ item.value.name }}.conf"
+      dest: "/etc/nginx/conf.d/{{ item.value.name }}.conf"
       owner: "{{ nginx.user }}"
       group: "{{ nginx.user }}"
       mode: 0644
+    with_dict: "{{ sites }}"
 
   - name: copy php-fpm conf
     template:
@@ -113,9 +73,10 @@
 
   - name: create bitrix directory
     file:
-      path: "{{ bitrix.site_dir }}"
+      path: "{{ item.value.site_dir }}"
       state: directory
       owner: "{{ nginx.user }}"
+    with_dict: "{{ sites }}"
 
   - name: create php session directory
     file:
@@ -125,11 +86,12 @@
 
   - name: download bitrix archive
     unarchive:
-      src: "{{ bitrix.url }}"
-      dest: "{{ bitrix.site_dir }}"
+      src: "{{ item.value.url }}"
+      dest: "{{ item.value.site_dir }}"
       owner: "{{ nginx.user }}"
       remote_src: yes
-      creates: "{{ bitrix.site_dir}}/index.php"
+      creates: "{{ item.value.site_dir}}/index.php"
+    with_dict: "{{ sites }}"
 
   - name: ensure services running
     service:
@@ -147,3 +109,15 @@
     with_items:
       - http
       - https
+
+  - name: install mysqltuner
+    get_url:
+      url: http://mysqltuner.pl
+      dest: /usr/local/bin/mysqltuner.pl
+      mode: 755
+
+  - name: manage mysql root password
+    mysql_user:
+      name: root
+      host: localhost
+      password: "{{ mysql.root_password }}"
