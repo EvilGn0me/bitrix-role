@@ -55,7 +55,7 @@
       mode: 0644
     with_dict: "{{ sites }}"
 
-  - name: copy php-fpm conf
+  - name: manage php-fpm conf
     template:
       src: templates/php-fpm.conf
       dest: /etc/php-fpm.d/www.conf
@@ -63,12 +63,28 @@
       group: "{{ nginx.user }}"
       mode: 0644
 
-  - name: copy php.ini
+  - name: manage php.ini
     template:
       src: templates/php.ini
       dest: /etc/php.ini
       owner: "{{ nginx.user }}"
       group: "{{ nginx.user }}"
+      mode: 0644
+
+  - name: manage mysql server config
+    template:
+      src: templates/mysql_server.cnf
+      dest: /etc/my.cnf.d/server.cnf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: manage opcache ini
+    template:
+      src: templates/opcache.ini
+      dest: /etc/php.d/opcache.ini
+      owner: root
+      group: root
       mode: 0644
 
   - name: create bitrix directory

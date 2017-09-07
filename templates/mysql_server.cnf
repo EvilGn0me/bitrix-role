@@ -1,0 +1,19 @@
+[server]
+[mysqld]
+query_cache_size = 0
+query_cache_type = 0
+query_cache_limit = 1M
+thread_cache_size = 4
+innodb_file_per_table = ON
+innodb_buffer_pool_size = 300M
+innodb_additional_mem_pool_size = 50M
+innodb_file_io_threads = 6
+innodb_lock_wait_timeout = 50
+innodb_log_buffer_size = 37M
+innodb_flush_log_at_trx_commit = 0
+join_buffer_size = 2M
+tmp_table_size = 256M
+max_heap_table_size = 256M
+table_open_cache = 4096
+skip_name_resolve = on
+skip-networking
