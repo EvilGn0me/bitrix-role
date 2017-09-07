@@ -12,6 +12,9 @@ repos:
     name: 'webtatic'
     baseurl: 'https://repo.webtatic.com/yum/el7/$basearch/'
     description: 'webtatic repo'
+  mysql:
+    name: 'mysql-repo'
+    baseurl: 'http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/'
 packages:
   - nginx
   - php71w-fpm
@@ -22,11 +25,11 @@ packages:
   - php71w-mcrypt
   - freetype
   - memcached
-  - mariadb-server
+  - mysql-server
   - unzip
   - MySQL-python
 services:
   - nginx
   - php-fpm
-  - mariadb
+  - mysqld
   - memcached

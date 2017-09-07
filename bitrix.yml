@@ -74,7 +74,7 @@
   - name: manage mysql server config
     template:
       src: templates/mysql_server.cnf
-      dest: /etc/my.cnf.d/server.cnf
+      dest: /etc/my.cnf
       owner: root
       group: root
       mode: 0644
@@ -86,6 +86,12 @@
       owner: root
       group: root
       mode: 0644
+
+  - name: create bitrix directory
+    file:
+      path: "{{ php.session }}"
+      owner: "{{ nginx.user }}"
+      state: directory
 
   - name: create bitrix directory
     file:
