@@ -23,6 +23,7 @@ packages:
   - php-gd
   - php-opcache
   - php-mcrypt
+  - php-xml
   - freetype
   - memcached
   - mariadb-server

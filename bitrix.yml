@@ -115,6 +115,13 @@
       creates: "{{ item.value.site_dir}}/index.php"
     with_dict: "{{ sites }}"
 
+  - name: bitrix cron add
+    cron:
+      name: "bitrix crontasks"
+      minute: "0"
+      job: "/usr/bin/php -f {{ sites.bitrix.site_dir }}/bitrix/modules/main/tools/cron_events.php"
+
+
   - name: ensure services running
     service:
       name: "{{ item }}"
@@ -143,3 +150,4 @@
       name: root
       host: localhost
       password: "{{ mysql.root_password }}"
+    ignore_errors: yes
