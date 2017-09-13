@@ -18,7 +18,7 @@ sites:
   bitrix:
     name: 'bitrix'
     site_dir: '/home/bitrix/www'
-    url: 'http://www.1c-bitrix.ru/download/small_business_encode_php5.tar.gz'
+    url: 'https://www.1c-bitrix.ru/download/portal/bitrix24_encode_php5.tar.gz'
   phpmyadmin:
     name: 'phpmyadmin'
     site_dir: '/home/bitrix/phpmyadmin'

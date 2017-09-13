@@ -4,8 +4,8 @@ repos:
     name: 'epel-release'
     baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/$basearch/'
   nginx:
-    name: 'nginx-official'
-    baseurl: 'http://nginx.org/packages/centos/$releasever/$basearch/'
+    name: 'bitrix'
+    baseurl: 'http://repos.1c-bitrix.ru/yum/el/7/$basearch/'
   remi:
     name: 'remi'
     baseurl: 'http://rpms.remirepo.net/enterprise/7/remi/$basearch/'
@@ -16,7 +16,7 @@ repos:
     name: 'mariadb-repo'
     baseurl: 'http://yum.mariadb.org/10.2/centos7-amd64'
 packages:
-  - nginx
+  - bx-nginx
   - php-fpm
   - php-mysqlnd
   - php-mbstring
@@ -29,6 +29,9 @@ packages:
   - mariadb-server
   - MySQL-python
   - unzip
+  - postfix
+  - poppler-utils
+  - catdoc
 services:
   - nginx
   - php-fpm

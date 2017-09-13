@@ -121,6 +121,13 @@
       minute: "0"
       job: "/usr/bin/php -f {{ sites.bitrix.site_dir }}/bitrix/modules/main/tools/cron_events.php"
 
+  - name: manage im_subscrider.conf
+    template:
+    src: templates/im_subscrider.conf
+    dest: /etc/nginx/im_subscrider.conf
+    owner: root
+    group: root
+    mode: 0644
 
   - name: ensure services running
     service:
