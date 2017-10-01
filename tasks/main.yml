@@ -1,0 +1,148 @@
+---
+# tasks file for bitrix-role
+- name: add repositories
+  yum_repository:
+    name: "{{ item.value.name }}"
+    baseurl: "{{ item.value.baseurl }}"
+    description: Repo managed by ansible
+    gpgcheck: no
+  with_dict: "{{ repos }}"
+
+- name: install required packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - "{{ packages }}"
+
+- name: manage nginx user
+  user:
+    name: "{{ nginx.user }}"
+    shell: "{{ nginx.user_shell }}"
+    state: present
+
+- name: remove default nginx config
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+
+- name: copy nginx conf
+  template:
+    src: templates/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: "{{ nginx.user }}"
+    group: "{{ nginx.user }}"
+    mode: 0644
+
+- name: copy nginx bitrix conf
+  template:
+    src: "templates/{{ item.value.name }}.conf"
+    dest: "/etc/nginx/conf.d/{{ item.value.name }}.conf"
+    owner: "{{ nginx.user }}"
+    group: "{{ nginx.user }}"
+    mode: 0644
+  with_dict: "{{ sites }}"
+
+- name: manage php-fpm conf
+  template:
+    src: templates/php-fpm.conf
+    dest: /etc/php-fpm.d/www.conf
+    owner: "{{ nginx.user }}"
+    group: "{{ nginx.user }}"
+    mode: 0644
+
+- name: manage php.ini
+  template:
+    src: templates/php.ini
+    dest: /etc/php.ini
+    owner: "{{ nginx.user }}"
+    group: "{{ nginx.user }}"
+    mode: 0644
+
+- name: manage mysql server config
+  template:
+    src: templates/mysql_server.cnf
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: manage opcache ini
+  template:
+    src: templates/opcache.ini
+    dest: /etc/php.d/opcache.ini
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create bitrix directory
+  file:
+    path: "{{ php.session }}"
+    owner: "{{ nginx.user }}"
+    state: directory
+
+- name: create bitrix directory
+  file:
+    path: "{{ item.value.site_dir }}"
+    state: directory
+    owner: "{{ nginx.user }}"
+  with_dict: "{{ sites }}"
+
+- name: create php session directory
+  file:
+    path: "{{ php.session }}"
+    state: directory
+    owner: "{{ nginx.user }}"
+
+- name: download bitrix archive
+  unarchive:
+    src: "{{ item.value.url }}"
+    dest: "{{ item.value.site_dir }}"
+    owner: "{{ nginx.user }}"
+    remote_src: yes
+    creates: "{{ item.value.site_dir}}/index.php"
+  with_dict: "{{ sites }}"
+
+- name: bitrix cron add
+  cron:
+    name: "bitrix crontasks"
+    minute: "0"
+    job: "/usr/bin/php -f {{ sites.bitrix.site_dir }}/bitrix/modules/main/tools/cron_events.php"
+
+- name: manage im_subscrider.conf
+  template:
+  src: templates/im_subscrider.conf
+  dest: /etc/nginx/im_subscrider.conf
+  owner: root
+  group: root
+  mode: 0644
+
+- name: ensure services running
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+  - "{{ services }}"
+
+- name: manage firewall
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items:
+    - http
+    - https
+
+- name: install mysqltuner
+  get_url:
+    url: http://mysqltuner.pl
+    dest: /usr/local/bin/mysqltuner.pl
+    mode: 755
+
+- name: manage mysql root password
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql.root_password }}"
+  ignore_errors: yes
