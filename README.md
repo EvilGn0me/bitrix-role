@@ -1,4 +1,4 @@
-Role Name
+Bitrix-role
 =========
 
 This installs Bitrix CMS or Bitrix 24 with lemp.
@@ -19,4 +19,3 @@ License
 -------
 
 BSD
- 

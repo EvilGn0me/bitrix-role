@@ -6,14 +6,14 @@
     baseurl: "{{ item.value.baseurl }}"
     description: Repo managed by ansible
     gpgcheck: no
-  with_dict: "{{ repos }}"
+  with_dict: "{{ bitrix_vars.repos }}"
 
 - name: install required packages
   yum:
     name: "{{ item }}"
     state: latest
   with_items:
-    - "{{ packages }}"
+    - "{{ bitrix_vars.packages }}"
 
 - name: manage nginx user
   user:
@@ -36,7 +36,7 @@
 
 - name: copy nginx bitrix conf
   template:
-    src: "templates/{{ item.value.name }}.conf"
+    src: "templates/bitrix.conf"
     dest: "/etc/nginx/conf.d/{{ item.value.name }}.conf"
     owner: "{{ nginx.user }}"
     group: "{{ nginx.user }}"
@@ -103,19 +103,14 @@
     creates: "{{ item.value.site_dir}}/index.php"
   with_dict: "{{ sites }}"
 
-- name: bitrix cron add
-  cron:
-    name: "bitrix crontasks"
-    minute: "0"
-    job: "/usr/bin/php -f {{ sites.bitrix.site_dir }}/bitrix/modules/main/tools/cron_events.php"
 
 - name: manage im_subscrider.conf
   template:
-  src: templates/im_subscrider.conf
-  dest: /etc/nginx/im_subscrider.conf
-  owner: root
-  group: root
-  mode: 0644
+    src: templates/im_subscrider.conf
+    dest: /etc/nginx/im_subscrider.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: ensure services running
   service:
@@ -123,7 +118,7 @@
     state: restarted
     enabled: yes
   with_items:
-  - "{{ services }}"
+  - "{{ bitrix_vars.services }}"
 
 - name: manage firewall
   firewalld:
