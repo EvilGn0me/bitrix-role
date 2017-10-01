@@ -16,6 +16,8 @@ php:
   start_servers: '10'
   min_spare_servers: '5'
   max_spare_servers: '35'
+bitrix_opts:
+  utf8: True
 sites:
   bitrix:
     name: 'bitrix'
