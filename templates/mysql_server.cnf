@@ -1,6 +1,6 @@
 [mysqld]
-query_cache_size = 0
-query_cache_type = 0
+query_cache_size = 256M
+query_cache_type = 1
 thread_cache_size = 4
 innodb_file_per_table = ON
 innodb_buffer_pool_size = 800M

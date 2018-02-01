@@ -9,8 +9,8 @@ nginx:
 php:
   timezone: 'Europe/Moscow'
   fpm_socket: '/var/run/php-fpm.sock'
-  slowlog: '/var/log/php_slow.log'
-  errorlog: '/var/log/php_error.log'
+  slowlog: '/var/log/php-fpm/php_slow.log'
+  errorlog: '/var/log/php-fpm/php_error.log'
   session: '/var/run/php/'
   max_children: '50'
   start_servers: '10'
@@ -25,6 +25,9 @@ sites:
     url: 'https://www.1c-bitrix.ru/download/portal/bitrix24_encode_php5.tar.gz'
 mysql:
   root_password: 'secret'
+  user: 'bitrix'
+  database: 'sitemanager'
+  password: 'secret'
 php_opts:
 - short_open_tag = On
 - asp_tags = Off

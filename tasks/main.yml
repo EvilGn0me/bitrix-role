@@ -77,12 +77,6 @@
 
 - name: create bitrix directory
   file:
-    path: "{{ php.session }}"
-    owner: "{{ nginx.user }}"
-    state: directory
-
-- name: create bitrix directory
-  file:
     path: "{{ item.value.site_dir }}"
     state: directory
     owner: "{{ nginx.user }}"
@@ -90,9 +84,12 @@
 
 - name: create php session directory
   file:
-    path: "{{ php.session }}"
+    path: "{{ item }}"
     state: directory
     owner: "{{ nginx.user }}"
+  with_items:
+    - "{{ php.session }}"
+    - /var/lib/php
 
 - name: download bitrix archive
   unarchive:
@@ -141,3 +138,31 @@
     host: localhost
     password: "{{ mysql.root_password }}"
   ignore_errors: yes
+
+- name: update root my.cnf
+  template:
+    src: templates/user.my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: remove all anonymous users from mysql
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql.root_password }}"
+
+- name: create database for zabbix
+  mysql_db:
+    name: sitemanager
+    state: present
+
+- name: create mysql user for zabbix
+  mysql_user:
+    name: "{{ mysql.user }}"
+    password: "{{ mysql.password }}"
+    priv: '{{ mysql.database }}.*:ALL'
+    state: present
