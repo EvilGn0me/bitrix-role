@@ -11,7 +11,7 @@ php:
   fpm_socket: '/var/run/php-fpm.sock'
   slowlog: '/var/log/php-fpm/php_slow.log'
   errorlog: '/var/log/php-fpm/php_error.log'
-  session: '/var/run/php/'
+  session: '/var/lib/php/session'
   max_children: '50'
   start_servers: '10'
   min_spare_servers: '5'
