@@ -66,4 +66,4 @@ php_opts:
 - allow_url_fopen = On
 - allow_url_include = Off
 - default_socket_timeout = 60
-- realpath_cache_size = 4096k
+- realpath_cache_size = 8M

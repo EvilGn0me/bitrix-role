@@ -22,6 +22,7 @@ bitrix_vars:
     - php-fpm
     - php-mysqlnd
     - php-mbstring
+    - php-memcached
     - php-gd
     - php-opcache
     - php-mcrypt
