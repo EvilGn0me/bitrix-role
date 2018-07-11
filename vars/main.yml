@@ -27,6 +27,7 @@ bitrix_vars:
     - php-opcache
     - php-mcrypt
     - php-xml
+    - php-apc
     - freetype
     - memcached
     - mariadb-server

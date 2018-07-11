@@ -117,15 +117,6 @@
   with_items:
   - "{{ bitrix_vars.services }}"
 
-- name: manage firewall
-  firewalld:
-    service: "{{ item }}"
-    permanent: true
-    state: enabled
-  with_items:
-    - http
-    - https
-
 - name: install mysqltuner
   get_url:
     url: http://mysqltuner.pl
@@ -166,3 +157,12 @@
     password: "{{ mysql.password }}"
     priv: '{{ mysql.database }}.*:ALL'
     state: present
+
+- name: manage bitrix extra settings
+  template:
+    src: templates/settings_extra.php
+    dest: '{{ item.value.site_dir}}/.settings_extra.php'
+    owner: root
+    group: root
+    mode: 0644
+  with_dict: "{{ sites }}"
