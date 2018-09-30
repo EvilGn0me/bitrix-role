@@ -11,6 +11,13 @@ Only Centos 7 is supported.
 This role is standalone and does not require any others.
 Nginx package will be removed, this role uses bx-nginx from bitrix repository.
 
+First what you might want to adjust:
+```
+nginx:
+  hostname: 'bitrix.host'
+```
+
+
 Role Variables
 --------------
 
@@ -30,6 +37,9 @@ kitchen converge # creates image, installs role
 kitchen verify # creates image(if not created), installs role(if not installed), run tests
 ```
 
+TODO
+--------------
+* Add ability to add several bitrix sites.
 
 License
 -------
