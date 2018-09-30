@@ -7,12 +7,28 @@ This installs Bitrix CMS or Bitrix 24 with lemp.
 Requirements
 ------------
 
-This role is standalone and does not require any others. But uses nginx from bitrix repo so you should remove nginx from server where this role will be applied. This will be fixed in future releases.
+Only Centos 7 is supported.
+This role is standalone and does not require any others.
+Nginx package will be removed, this role uses bx-nginx from bitrix repository.
 
 Role Variables
 --------------
 
-For all adjustable variables please check defaults/main.yml. You may change them as you wish in your invetory files.
+For all adjustable variables please check defaults/main.yml. You may change them as you wish in your inventory files.
+
+Tests
+--------------
+You need ruby installed to run kitchen.
+Also all dependencies installed via Bundler
+```
+bundle
+```
+then just run kitchen
+```
+kitchen test # creates image, installs role, run tests, destroy image
+kitchen converge # creates image, installs role
+kitchen verify # creates image(if not created), installs role(if not installed), run tests
+```
 
 
 License

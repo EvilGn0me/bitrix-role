@@ -6,16 +6,6 @@ nginx:
   user_shell: /bin/bash
   workers: '1'
   worker_connections: '1024'
-php:
-  timezone: 'Europe/Moscow'
-  fpm_socket: '/var/run/php-fpm.sock'
-  slowlog: '/var/log/php-fpm/php_slow.log'
-  errorlog: '/var/log/php-fpm/php_error.log'
-  session: '/var/lib/php/session'
-  max_children: '50'
-  start_servers: '10'
-  min_spare_servers: '5'
-  max_spare_servers: '35'
 bitrix_opts:
   utf8: True
 sites:
@@ -28,42 +18,52 @@ mysql:
   user: 'bitrix'
   database: 'sitemanager'
   password: 'secret'
+php:
+  timezone: 'Europe/Moscow'
+  fpm_socket: '/var/run/php-fpm.sock'
+  slowlog: '/var/log/php-fpm/php_slow.log'
+  errorlog: '/var/log/php-fpm/php_error.log'
+  session: '/var/lib/php/session'
+  max_children: '50'
+  start_servers: '10'
+  min_spare_servers: '5'
+  max_spare_servers: '35'
 php_opts:
-- short_open_tag = On
-- asp_tags = Off
-- precision = 14
-- output_buffering = 4096
-- zlib.output_compression = Off
-- implicit_flush = Off
-- unserialize_callback_func =
-- serialize_precision = 17
-- zend.enable_gc = On
-- expose_php = On
-- max_execution_time = 300
-- max_input_time = 300
-- memory_limit = 128M
-- error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
-- display_errors = On
-- display_startup_errors = Off
-- log_errors = On
-- log_errors_max_len = 1024
-- ignore_repeated_errors = Off
-- ignore_repeated_source = Off
-- report_memleaks = On
-- track_errors = Off
-- max_input_vars = 10000
-- html_errors = On
-- variables_order = "GPCS"
-- request_order = "GP"
-- register_argc_argv = Off
-- auto_globals_jit = On
-- post_max_size = 256M
-- default_mimetype = "text/html"
-- enable_dl = Off
-- file_uploads = On
-- upload_max_filesize = 256M
-- max_file_uploads = 20
-- allow_url_fopen = On
-- allow_url_include = Off
-- default_socket_timeout = 60
-- realpath_cache_size = 8M
+  - short_open_tag = On
+  - asp_tags = Off
+  - precision = 14
+  - output_buffering = 4096
+  - zlib.output_compression = Off
+  - implicit_flush = Off
+  - unserialize_callback_func =
+  - serialize_precision = 17
+  - zend.enable_gc = On
+  - expose_php = On
+  - max_execution_time = 300
+  - max_input_time = 300
+  - memory_limit = 128M
+  - error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+  - display_errors = On
+  - display_startup_errors = Off
+  - log_errors = On
+  - log_errors_max_len = 1024
+  - ignore_repeated_errors = Off
+  - ignore_repeated_source = Off
+  - report_memleaks = On
+  - track_errors = Off
+  - max_input_vars = 10000
+  - html_errors = On
+  - variables_order = "GPCS"
+  - request_order = "GP"
+  - register_argc_argv = Off
+  - auto_globals_jit = On
+  - post_max_size = 256M
+  - default_mimetype = "text/html"
+  - enable_dl = Off
+  - file_uploads = On
+  - upload_max_filesize = 256M
+  - max_file_uploads = 20
+  - allow_url_fopen = On
+  - allow_url_include = Off
+  - default_socket_timeout = 60
+  - realpath_cache_size = 8M

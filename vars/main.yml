@@ -2,9 +2,6 @@
 # vars file for bitrix-role
 bitrix_vars:
   repos:
-    epel:
-      name: 'epel-release'
-      baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/$basearch/'
     bitrix:
       name: 'bitrix'
       baseurl: 'http://repos.1c-bitrix.ru/yum/el/7/$basearch/'
@@ -14,9 +11,12 @@ bitrix_vars:
     remi_php71:
       name: 'remi-php71'
       baseurl: 'http://rpms.remirepo.net/enterprise/7/php71/$basearch/'
-    mariadb:
-      name: 'mariadb-repo'
-      baseurl: 'http://yum.mariadb.org/10.2/centos7-amd64'
+    percona:
+      name: 'percona-repo'
+      baseurl: 'http://repo.percona.com/release/$releasever/RPMS/$basearch'
+    percona-noarch:
+      name: 'percona-noarch'
+      baseurl: 'http://repo.percona.com/release/$releasever/RPMS/noarch'
   packages:
     - bx-nginx
     - php-fpm
@@ -25,17 +25,17 @@ bitrix_vars:
     - php-memcached
     - php-gd
     - php-opcache
-    - php-mcrypt
     - php-xml
     - php-apc
     - freetype
     - memcached
-    - mariadb-server
+    - Percona-Server-server-56
     - MySQL-python
     - unzip
     - postfix
     - poppler-utils
-    - catdoc
+  uninstall_list:
+    - nginx
   services:
     - nginx
     - php-fpm

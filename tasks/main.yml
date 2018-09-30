@@ -2,23 +2,37 @@
 # tasks file for bitrix-role
 - name: add repositories
   yum_repository:
-    name: "{{ item.value.name }}"
-    baseurl: "{{ item.value.baseurl }}"
+    name: '{{ item.value.name }}'
+    baseurl: '{{ item.value.baseurl }}'
     description: Repo managed by ansible
     gpgcheck: no
-  with_dict: "{{ bitrix_vars.repos }}"
+  with_dict: '{{ bitrix_vars.repos }}'
+
+- name: install epel
+  yum:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - 'epel-release'
+
+- name: remove unwanted packages
+  yum:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ bitrix_vars.uninstall_list }}'
 
 - name: install required packages
   yum:
-    name: "{{ item }}"
+    name: '{{ item }}'
     state: latest
   with_items:
-    - "{{ bitrix_vars.packages }}"
+    - '{{ bitrix_vars.packages }}'
 
 - name: manage nginx user
   user:
-    name: "{{ nginx.user }}"
-    shell: "{{ nginx.user_shell }}"
+    name: '{{ nginx.user }}'
+    shell: '{{ nginx.user_shell }}'
     state: present
 
 - name: remove default nginx config
@@ -30,33 +44,33 @@
   template:
     src: templates/nginx.conf
     dest: /etc/nginx/nginx.conf
-    owner: "{{ nginx.user }}"
-    group: "{{ nginx.user }}"
+    owner: '{{ nginx.user }}'
+    group: '{{ nginx.user }}'
     mode: 0644
 
 - name: copy nginx bitrix conf
   template:
-    src: "templates/bitrix.conf"
-    dest: "/etc/nginx/conf.d/{{ item.value.name }}.conf"
-    owner: "{{ nginx.user }}"
-    group: "{{ nginx.user }}"
+    src: 'templates/bitrix.conf'
+    dest: '/etc/nginx/conf.d/{{ item.value.name }}.conf'
+    owner: '{{ nginx.user }}'
+    group: '{{ nginx.user }}'
     mode: 0644
-  with_dict: "{{ sites }}"
+  with_dict: '{{ sites }}'
 
 - name: manage php-fpm conf
   template:
     src: templates/php-fpm.conf
     dest: /etc/php-fpm.d/www.conf
-    owner: "{{ nginx.user }}"
-    group: "{{ nginx.user }}"
+    owner: '{{ nginx.user }}'
+    group: '{{ nginx.user }}'
     mode: 0644
 
 - name: manage php.ini
   template:
     src: templates/php.ini
     dest: /etc/php.ini
-    owner: "{{ nginx.user }}"
-    group: "{{ nginx.user }}"
+    owner: '{{ nginx.user }}'
+    group: '{{ nginx.user }}'
     mode: 0644
 
 - name: manage mysql server config
@@ -77,28 +91,28 @@
 
 - name: create bitrix directory
   file:
-    path: "{{ item.value.site_dir }}"
+    path: '{{ item.value.site_dir }}'
     state: directory
-    owner: "{{ nginx.user }}"
-  with_dict: "{{ sites }}"
+    owner: '{{ nginx.user }}'
+  with_dict: '{{ sites }}'
 
 - name: create php session directory
   file:
-    path: "{{ item }}"
+    path: '{{ item }}'
     state: directory
-    owner: "{{ nginx.user }}"
+    owner: '{{ nginx.user }}'
   with_items:
-    - "{{ php.session }}"
+    - '{{ php.session }}'
     - /var/lib/php
 
 - name: download bitrix archive
   unarchive:
-    src: "{{ item.value.url }}"
-    dest: "{{ item.value.site_dir }}"
-    owner: "{{ nginx.user }}"
+    src: '{{ item.value.url }}'
+    dest: '{{ item.value.site_dir }}'
+    owner: '{{ nginx.user }}'
     remote_src: yes
-    creates: "{{ item.value.site_dir}}/index.php"
-  with_dict: "{{ sites }}"
+    creates: '{{ item.value.site_dir}}/index.php'
+  with_dict: '{{ sites }}'
 
 
 - name: manage im_subscrider.conf
@@ -111,11 +125,11 @@
 
 - name: ensure services running
   service:
-    name: "{{ item }}"
+    name: '{{ item }}'
     state: restarted
     enabled: yes
   with_items:
-  - "{{ bitrix_vars.services }}"
+  - '{{ bitrix_vars.services }}'
 
 - name: install mysqltuner
   get_url:
@@ -127,7 +141,7 @@
   mysql_user:
     name: root
     host: localhost
-    password: "{{ mysql.root_password }}"
+    password: '{{ mysql.root_password }}'
   ignore_errors: yes
 
 - name: update root my.cnf
@@ -144,17 +158,17 @@
     host_all: yes
     state: absent
     login_user: root
-    login_password: "{{ mysql.root_password }}"
+    login_password: '{{ mysql.root_password }}'
 
-- name: create database for zabbix
+- name: create database for bitrix
   mysql_db:
     name: sitemanager
     state: present
 
-- name: create mysql user for zabbix
+- name: create mysql user for bitrix
   mysql_user:
-    name: "{{ mysql.user }}"
-    password: "{{ mysql.password }}"
+    name: '{{ mysql.user }}'
+    password: '{{ mysql.password }}'
     priv: '{{ mysql.database }}.*:ALL'
     state: present
 
@@ -165,4 +179,4 @@
     owner: root
     group: root
     mode: 0644
-  with_dict: "{{ sites }}"
+  with_dict: '{{ sites }}'
