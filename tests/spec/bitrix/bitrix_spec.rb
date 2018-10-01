@@ -7,7 +7,6 @@ conf = YAML.load_file('../defaults/main.yml')
 sys = YAML.load_file('../vars/main.yml')
 
 port = '80'
-php_opts = conf["mysql"]["php_opts"]
 services = sys["bitrix_vars"]["services"]
 
 describe port(port) do
