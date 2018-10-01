@@ -11,6 +11,11 @@ Only Centos 7 is supported.
 This role is standalone and does not require any others.
 Nginx package will be removed, this role uses bx-nginx from bitrix repository.
 
+You will need to add to your ansible.cfg to make your variable experience better.
+```
+hash_behaviour = merge
+```
+
 First what you might want to adjust:
 ```
 nginx:
@@ -40,8 +45,3 @@ kitchen verify # creates image(if not created), installs role(if not installed),
 TODO
 --------------
 * Add ability to add several bitrix sites.
-
-License
--------
-
-BSD
